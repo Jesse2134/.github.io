@@ -1,4 +1,4 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -6,43 +6,50 @@
     <title>ACCA 幸运大抽奖</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <!-- 引入组件库 -->
-<!-- 使用px -->
-<link rel="stylesheet" href="//unpkg.com/vue-ydui/dist/ydui.px.css">
-<!-- 引入Vue2.x -->
-<script src="https://cdn.bootcss.com/vue/2.5.17/vue.min.js"></script>
-<!-- 引入组件库 -->
-<script src="//unpkg.com/vue-ydui/dist/ydui.px.js"></script>
+    <!-- 使用px -->
+    <link rel="stylesheet" href="//unpkg.com/vue-ydui/dist/ydui.px.css">
+    <!-- 引入Vue2.x -->
+    <script src="https://cdn.bootcss.com/vue/2.5.17/vue.min.js"></script>
+    <!-- 引入组件库 -->
+    <script src="//unpkg.com/vue-ydui/dist/ydui.px.js"></script>
     <style type="text/css">
         .gift-form .yd-input {
             height: auto;
         }
     </style>
 </head>
+
 <body>
     <div id="gift" class="gift">
-        <yd-cell-group class='gift-form'>
-            <yd-cell-item>
-                <span slot="left" style="color: red;font-weight: 500">设置抽奖名称:</span>
-                <yd-input slot="right" required v-model="name" placeholder="请输入抽奖名称"></yd-input>
-            </yd-cell-item>
-            <yd-cell-item>
-                <span slot="left" style="color: red;font-weight: 500">设置抽奖名额:</span>
-                <yd-input slot="right" required v-model="number" max="20" placeholder="请输入本次抽奖名额"></yd-input>
-            </yd-cell-item>
-            <yd-cell-item>
-                <span slot="left" style="color: red;font-weight: 500">设置奖品:</span>
-                <yd-button slot="right" type="warning" @click.native="show2 = true">设置奖品</yd-button>
-            </yd-cell-item>
-        </yd-cell-group>
-        <div>
-            <span style="padding:5px" v-for="(item, index) in checklist" :key="index">[{{item}}]</span>
-        </div>
-        <yd-popup v-model="show2" position="bottom" height="60%">
-                <yd-checklist v-model="checklist">
-                    <yd-checklist-item :val="item" v-for="(item, index) in gifts" :key="index">
-                        <div style="height: 50px;line-height: 50px;">{{item}}</div>
-                    </yd-checklist-item>
-                </yd-checklist>
+        <yd-tab>
+            <yd-tab-panel label="抽奖">时间是一切财富中最宝贵的财富。</yd-tab-panel>
+            <yd-tab-panel label="设置">
+                <yd-cell-group class='gift-form'>
+                    <yd-cell-item>
+                        <span slot="left" style="color: red;font-weight: 500">设置抽奖名称:</span>
+                        <yd-input slot="right" required v-model="name" placeholder="请输入抽奖名称"></yd-input>
+                    </yd-cell-item>
+                    <yd-cell-item>
+                        <span slot="left" style="color: red;font-weight: 500">设置抽奖名额:</span>
+                        <yd-input slot="right" required v-model="number" max="20" placeholder="请输入本次抽奖名额"></yd-input>
+                    </yd-cell-item>
+                    <yd-cell-item>
+                        <span slot="left" style="color: red;font-weight: 500">设置奖品:</span>
+                        <yd-button slot="right" type="primary" @click.native="selctGiftShow = true">设置奖品</yd-button>
+                    </yd-cell-item>
+                </yd-cell-group>
+                <div>
+                    <span style="padding:5px" v-for="(item, index) in checklist" :key="index">[{{item}}]</span>
+                </div>
+                <yd-button size="large" type="primary" @click.native="saveData">保存设置</yd-button>
+            </yd-tab-panel>
+        </yd-tab>
+        <yd-popup v-model="selctGiftShow" position="bottom" height="60%">
+            <yd-checklist v-model="checklist">
+                <yd-checklist-item :val="item" v-for="(item, index) in allGifts" :key="index">
+                    <div style="height: 50px;line-height: 50px;">{{item}}</div>
+                </yd-checklist-item>
+            </yd-checklist>
         </yd-popup>
     </div>
     <script type="text/javascript">
@@ -51,14 +58,24 @@
             data: {
                 name: '',
                 number: '',
-                show2: true,
-                gifts: ["华为Mate20",'小米8','iPhone XR','macbook',
-                'airpods',"笔记本电脑",'小米平衡车','蓝牙耳机',
-                '汽车'],
-                checklist: ''
+                checklist: '',
+                selctGiftShow: false,
+                allGifts: ["华为Mate20", '小米8', 'iPhone XR', 'macbook',
+                    'airpods', "笔记本电脑", '小米平衡车', '蓝牙耳机',
+                    '汽车'
+                ],
             },
             methods: {
-
+                saveData(){
+                    let giftObj = {
+                        name: this.name,
+                        number: this.number,
+                        selectGift: this.checklist
+                    };
+                    let allList = localStorage.getItem('__gift__') || [];
+                    allList.push(giftObj);
+                    localStorage.setItem('__gift__', JSON.stringify(allList));
+                }
             }
 
         })
