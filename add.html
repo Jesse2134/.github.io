@@ -21,7 +21,10 @@
 
 <body>
     <div id="gift" class="gift">
-        <yd-navbar title="设置奖项"></yd-navbar>
+        <yd-navbar title="设置奖项">
+            <yd-navbar-back-icon slot="left" @click.native="back">返回</yd-navbar-back-icon>
+        </yd-navbar>
+        
         <yd-cell-group class='gift-form'>
             <yd-cell-item>
                 <span slot="left" style="color: red;font-weight: 500">设置奖项名称:</span>
@@ -49,13 +52,13 @@
             </yd-checklist>
         </yd-popup>
         <yd-tabbar fixed>
-            <yd-tabbar-item title="首页" type="a" link="/index.html">
+            <yd-tabbar-item title="首页" type="a" link="index.html">
                 <yd-icon name="home" slot="icon"></yd-icon>
             </yd-tabbar-item>
-            <yd-tabbar-item title="奖项" type="a" link="/list.html">
+            <yd-tabbar-item title="奖项" type="a" link="list.html">
                 <yd-icon name="star" slot="icon"></yd-icon>
             </yd-tabbar-item>
-            <yd-tabbar-item title="设置" type="a" link="/add.html" active>
+            <yd-tabbar-item title="设置" type="a" link="add.html" active>
                 <yd-icon name="setting" slot="icon"></yd-icon>
             </yd-tabbar-item>
         </yd-tabbar>
@@ -74,6 +77,10 @@
                 ],
             },
             methods: {
+                back() {
+                    window.history.go(-1);
+                },
+
                 saveData() {
                     let giftObj = {
                         name: this.name,

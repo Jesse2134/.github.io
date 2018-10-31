@@ -24,14 +24,42 @@
         <yd-navbar title="抽奖">
             <yd-navbar-back-icon slot="left" @click.native="back">返回</yd-navbar-back-icon>
         </yd-navbar>
+        <yd-grids-group :rows="2">
+            <yd-grids-item>
+                <div slot="text">
+                    抽奖编号范围
+                </div>
+            </yd-grids-item>
+            <yd-grids-item>
+                <div slot="text" @click="setCodeShow = true">
+                    <span>{{start}} ~ {{end}}</span>
+                </div>
+            </yd-grids-item>
+        </yd-grids-group>
+        <yd-popup v-model="setCodeShow" position="bottom" height="60%">
+            <yd-cell-group class='gift-form'>
+                <yd-cell-item>
+                    <span slot="left" style="color: red;font-weight: 500">抽奖编号范围:</span>
+                </yd-cell-item>
+                <yd-cell-item>
+                    <span slot="left">
+                        开始:<yd-spinner mix="0" v-model="start"></yd-spinner>
+                    </span>
+                    <span slot="right">
+                        结束:<yd-spinner v-model="end"></yd-spinner>
+                    </span>
+                </yd-cell-item>
+            </yd-cell-group>
+            <yd-button type="primary" @click.native="setCode">设置奖品</yd-button>
+        </yd-popup>
         <yd-tabbar fixed>
-            <yd-tabbar-item title="首页" type="a" link="/index.html" active>
+            <yd-tabbar-item title="首页" type="a" link="index.html" active>
                 <yd-icon name="home" slot="icon"></yd-icon>
             </yd-tabbar-item>
-            <yd-tabbar-item title="奖项" type="a" link="/list.html">
+            <yd-tabbar-item title="奖项" type="a" link="list.html">
                 <yd-icon name="star" slot="icon"></yd-icon>
             </yd-tabbar-item>
-            <yd-tabbar-item title="设置" type="a" link="/add.html">
+            <yd-tabbar-item title="设置" type="a" link="add.html">
                 <yd-icon name="setting" slot="icon"></yd-icon>
             </yd-tabbar-item>
         </yd-tabbar>
@@ -40,6 +68,10 @@
         new Vue({
             el: '#gift',
             data: {
+                setCodeShow: false,
+                start: '100',
+                end: 200,
+
                 name: '',
                 number: '',
                 checklist: [],
@@ -51,7 +83,14 @@
             },
             methods: {
                 back() {
-                    go(-1);
+                    window.history.go(-1);
+                },
+                setCode(){
+                    let codeObj = {
+                        start: this.start,
+                        end: this.end
+                    }
+                    localStorage.setItem('__code__', codeObj);
                 },
 
                 saveData() {
