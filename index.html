@@ -42,6 +42,7 @@
                     <span style="padding:5px" v-for="(item, index) in checklist" :key="index">[{{item}}]</span>
                 </div>
                 <yd-button size="large" type="primary" @click.native="saveData">保存设置</yd-button>
+                <yd-button size="large" type="primary" @click.native="getLocalStorage">获取测试</yd-button>
             </yd-tab-panel>
         </yd-tab>
         <yd-popup v-model="selctGiftShow" position="bottom" height="60%">
@@ -75,6 +76,10 @@
                     let allList = localStorage.getItem('__gift__') || [];
                     allList.push(giftObj);
                     localStorage.setItem('__gift__', JSON.stringify(allList));
+                },
+                getLocalStorage(){
+                    let all = localStorage.getItem('__gift__') || [];
+                    alert(all);
                 }
             }
 
