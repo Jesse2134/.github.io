@@ -21,17 +21,41 @@
 
 <body>
     <div id="gift" class="gift">
-        <yd-navbar title="抽奖">
-            <yd-navbar-back-icon slot="left" @click.native="back">返回</yd-navbar-back-icon>
-        </yd-navbar>
+        <yd-navbar title="设置奖项"></yd-navbar>
+        <yd-cell-group class='gift-form'>
+            <yd-cell-item>
+                <span slot="left" style="color: red;font-weight: 500">设置奖项名称:</span>
+                <yd-input slot="right" required v-model="name" placeholder="请输入抽奖名称"></yd-input>
+            </yd-cell-item>
+            <yd-cell-item>
+                <span slot="left" style="color: red;font-weight: 500">设置奖项名额:</span>
+                <yd-input slot="right" required v-model="number" max="20" placeholder="请输入奖项名额"></yd-input>
+            </yd-cell-item>
+            <yd-cell-item>
+                <span slot="left" style="color: red;font-weight: 500">设置奖品:</span>
+                <yd-button slot="right" type="primary" @click.native="selctGiftShow = true">设置奖品</yd-button>
+            </yd-cell-item>
+        </yd-cell-group>
+        <div>
+            <span style="padding:5px" v-for="(item, index) in checklist" :key="index">[{{item}}]</span>
+        </div>
+        <yd-button size="large" type="primary" @click.native="saveData">保存设置</yd-button>
+        <yd-button size="large" type="primary" @click.native="getLocalStorage">获取测试</yd-button>
+        <yd-popup v-model="selctGiftShow" position="bottom" height="60%">
+            <yd-checklist v-model="checklist">
+                <yd-checklist-item :val="item" v-for="(item, index) in allGifts" :key="index">
+                    <div style="height: 50px;line-height: 50px;">{{item}}</div>
+                </yd-checklist-item>
+            </yd-checklist>
+        </yd-popup>
         <yd-tabbar fixed>
-            <yd-tabbar-item title="首页" type="a" link="/index.html" active>
+            <yd-tabbar-item title="首页" type="a" link="/index.html">
                 <yd-icon name="home" slot="icon"></yd-icon>
             </yd-tabbar-item>
             <yd-tabbar-item title="奖项" type="a" link="/list.html">
                 <yd-icon name="star" slot="icon"></yd-icon>
             </yd-tabbar-item>
-            <yd-tabbar-item title="设置" type="a" link="/add.html">
+            <yd-tabbar-item title="设置" type="a" link="/add.html" active>
                 <yd-icon name="setting" slot="icon"></yd-icon>
             </yd-tabbar-item>
         </yd-tabbar>
@@ -50,10 +74,6 @@
                 ],
             },
             methods: {
-                back() {
-                    go(-1);
-                },
-
                 saveData() {
                     let giftObj = {
                         name: this.name,
