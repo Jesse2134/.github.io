@@ -42,12 +42,12 @@
                     <span slot="left" style="color: red;font-weight: 500">抽奖编号范围:</span>
                 </yd-cell-item>
                 <yd-cell-item>
-                    <span slot="left">
+                    <div slot="left">
                         开始:<yd-spinner mix="0" v-model="start"></yd-spinner>
-                    </span>
-                    <span slot="right">
+                    </div>
+                    <div slot="right">
                         结束:<yd-spinner v-model="end"></yd-spinner>
-                    </span>
+                    </div>
                 </yd-cell-item>
             </yd-cell-group>
             <yd-button type="primary" @click.native="setCode">设置奖品</yd-button>
