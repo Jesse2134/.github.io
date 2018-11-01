@@ -61,7 +61,7 @@
             </yd-grids-item>
             <yd-grids-item>
                 <div slot="text" @click="selectGiftShow = true">
-                    {{checkingGift}} ({{number}}名)
+                    {{checkingGift}} <span v-if="number">({{number}}名)</span>
                 </div>
             </yd-grids-item>
         </yd-grids-group>
