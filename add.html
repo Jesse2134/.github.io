@@ -27,23 +27,23 @@
 
         <yd-cell-group class='gift-form'>
             <yd-cell-item>
-                <span slot="left" style="color: red;font-weight: 500">设置奖项名称:</span>
+                <span slot="left" style="color: red;font-weight: 500">奖项名称:</span>
                 <yd-input slot="right" required v-model="name" placeholder="请输入抽奖名称"></yd-input>
             </yd-cell-item>
             <yd-cell-item>
-                <span slot="left" style="color: red;font-weight: 500">设置奖项名额:</span>
-                <yd-input slot="right" required v-model="number" max="20" placeholder="请输入奖项名额"></yd-input>
+                <span slot="left" style="color: red;font-weight: 500">奖项名额:</span>
+                <yd-input slot="right" required v-model="number" max="20" placeholder="请输入奖项名额(数字)"></yd-input>
             </yd-cell-item>
             <yd-cell-item>
-                <span slot="left" style="color: red;font-weight: 500">设置奖品:</span>
-                <yd-button slot="right" type="primary" @click.native="selctGiftShow = true">设置奖品</yd-button>
+                <span slot="left" style="color: red;font-weight: 500">包含奖品:</span>
+                <yd-button slot="right" type="primary" @click.native="selctGiftShow = true">选择奖品</yd-button>
             </yd-cell-item>
         </yd-cell-group>
         <div>
             <span style="padding:5px" v-for="(item, index) in checklist" :key="index">[{{item}}]</span>
         </div>
         <div style="padding: 20px">
-            <yd-button size="large" type="primary" @click.native="saveData">保存设置</yd-button>
+            <yd-button size="large" shape="circle" type="primary" @click.native="saveData">保存设置</yd-button>
         </div>
         <yd-popup v-model="selctGiftShow" position="bottom" height="60%">
             <yd-checklist v-model="checklist">
@@ -72,10 +72,7 @@
                 number: '',
                 checklist: [],
                 selctGiftShow: false,
-                allGifts: ["华为Mate20", '小米8', 'iPhone XR', 'macbook',
-                    'airpods', "笔记本电脑", '小米平衡车', '蓝牙耳机',
-                    '汽车'
-                ],
+                allGifts: [],
                 searchName: ''
             },
             methods: {
@@ -170,6 +167,11 @@
                                 this.checklist = item.selectGift;
                             }
                         })
+                    }
+
+                    let gifts = localStorage.getItem('__giftsList__') || [];
+                    if (gifts && gifts.length > 0) {
+                        this.allGifts = JSON.parse(gifts);
                     }
                 }
             },

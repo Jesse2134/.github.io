@@ -74,7 +74,7 @@
             <yd-flexbox-item class="yd-number" v-for="i in numberYu" :key="i">{{selectedTimer[3*numberSh + i - 1]}}</yd-flexbox-item>
         </yd-flexbox>
         <div style="padding: 20px">
-            <yd-button v-if="!checking" size="large" type="primary" shape="circle" @click.native="startTimer">点击开始</yd-button>
+            <yd-button v-if="!checking" :disabled="!number" size="large" type="primary" shape="circle" @click.native="startTimer">点击开始</yd-button>
             <yd-button v-else size="large" type="primary" shape="circle" @click.native="stopTimer">停</yd-button>
         </div>
 
@@ -100,7 +100,7 @@
                     </div>
                 </yd-cell-item>
             </yd-cell-group>
-            <yd-button type="primary" size="large" @click.native="setCode">保存编号</yd-button>
+            <yd-button type="primary" shape="circle" size="large" @click.native="setCode">保存编号</yd-button>
             <div style="text-align: center">开始抽奖后,不允许再修改该编号</div>
         </yd-popup>
         <yd-popup v-model="selectGiftShow" position="bottom" height="40%">
@@ -109,7 +109,7 @@
                     :key="index"></yd-radio>
             </yd-radio-group>
             <div style="padding: 20px; margin-bottom: 60px">
-                <yd-button size="large" type="primary" @click.native="goToAdd(null, $event)">添加新奖项</yd-button>
+                <yd-button size="large" shape="circle" type="primary" @click.native="goToAdd(null, $event)">添加新奖项</yd-button>
             </div>
         </yd-popup>
         <yd-tabbar fixed>

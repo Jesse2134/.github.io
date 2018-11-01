@@ -16,6 +16,19 @@
         .gift-form .yd-input {
             height: auto;
         }
+
+        .gift {
+            background-color: #fff
+        }
+
+        .yd-number {
+            line-height: 30px;
+            text-align: center;
+            padding: 10px;
+            background-color: #fff;
+            color: red;
+            font-size: 18px;
+        }
     </style>
 </head>
 
@@ -25,8 +38,25 @@
             <yd-navbar-back-icon slot="left" @click.native="back">返回</yd-navbar-back-icon>
         </yd-navbar>
         <div style="padding: 20px">
-            <yd-button size="large" type="primary" @click.native="saveData">设置奖品池</yd-button>
+            <yd-button size="large" type="primary" shape="circle" @click.native="addGiftShow = true">设置奖品池</yd-button>
         </div>
+        <yd-flexbox v-for="i in allGifts">
+            <yd-flexbox-item class="yd-number">{{i}}</yd-flexbox-item>
+        </yd-flexbox>
+        <yd-popup v-model="addGiftShow" position="bottom" height="60%">
+            <yd-cell-group class='gift-form'>
+                <yd-cell-item>
+                    <span slot="left" style="color: red;font-weight: 500">添加奖品:</span>
+                </yd-cell-item>
+                <yd-cell-item>
+                    <span slot="left">奖品:</span>
+                    <yd-input slot="right" required v-model="name" placeholder="请输入奖品名称"></yd-input>
+                </yd-cell-item>
+            </yd-cell-group>
+            <div style="padding: 20px">
+                <yd-button type="primary" size="large" shape="circle" @click.native="saveData">保存</yd-button>
+            </div>
+        </yd-popup>
         <yd-tabbar fixed>
             <yd-tabbar-item title="首页" type="a" link="index.html">
                 <yd-icon name="home" slot="icon"></yd-icon>
@@ -44,64 +74,50 @@
             el: '#gift',
             data: {
                 name: '',
-                number: '',
                 checklist: [],
                 selctGiftShow: false,
-                allGifts: ["华为Mate20", '小米8', 'iPhone XR', 'macbook',
-                    'airpods', "笔记本电脑", '小米平衡车', '蓝牙耳机',
-                    '汽车'
-                ],
+                allGifts: [],
+                addGiftShow: false
             },
             methods: {
                 back() {
                     window.history.go(-1);
                 },
-
                 saveData() {
-                    let giftObj = {
-                        name: this.name,
-                        number: this.number,
-                        selectGift: this.checklist
-                    };
-                    if (!giftObj.name) {
+                    if (!this.name) {
                         this.$dialog.notify({
-                            mes: '请填写奖项名称',
-                            timeout: 1500
-                        });
-                    } else if (!giftObj.number) {
-                        this.$dialog.notify({
-                            mes: '请填写奖项名额',
-                            timeout: 1500
-                        });
-                    } else if (giftObj.selectGift.length < 1) {
-                        this.$dialog.notify({
-                            mes: '请选择奖品',
+                            mes: '请填写奖品名称',
                             timeout: 1500
                         });
                     } else {
-                        let allList = localStorage.getItem('__gift__') || [];
-                        if (allList.length > 0) {
-                            allList = JSON.parse(allList);
+                        if (this.allGifts.includes(this.name)) {
+                            this.$dialog.notify({
+                                mes: '该奖品已添加',
+                                timeout: 1500
+                            });
+                        } else {
+                            this.allGifts.push(this.name);
+                            localStorage.setItem('__giftsList__', JSON.stringify(this.allGifts));
+                            this.$dialog.toast({
+                                mes: '添加成功',
+                                timeout: 1500,
+                                icon: 'success',
+                            });
+                            this.getLocalStorage();
                         }
-                        allList.forEach((item, index) => {
-                            if (item.name == giftObj.name) {
-                                allList.splice(index, 1);
-                            }
-                        })
-                        allList.push(giftObj);
-                        localStorage.setItem('__gift__', JSON.stringify(allList));
-                        this.$dialog.toast({
-                            mes: '保存成功',
-                            timeout: 1500,
-                            icon: 'success',
-                        });
                     }
                 },
                 getLocalStorage() {
-                    let all = localStorage.getItem('__gift__') || [];
-                    alert(all);
-                }
-            }
+                    let all = localStorage.getItem('__giftsList__') || [];
+                    console.info(all);
+                    if (all && all.length > 0) {
+                        this.allGifts = JSON.parse(all);
+                    }
+                },
+            },
+            mounted() {
+                this.getLocalStorage();
+            },
 
         })
     </script>

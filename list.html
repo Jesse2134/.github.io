@@ -48,7 +48,7 @@
             </yd-preview-item>
         </yd-preview>
         <div style="padding: 20px; margin-bottom: 60px">
-            <yd-button size="large" type="primary" @click.native="goToAdd(null, $event)">添加奖项</yd-button>
+            <yd-button size="large" shape="circle" type="primary" @click.native="goToAdd(null, $event)">添加奖项</yd-button>
         </div>
         <yd-tabbar fixed>
             <yd-tabbar-item title="首页" type="a" link="index.html">
@@ -70,10 +70,7 @@
                 number: '',
                 checklist: [],
                 selctGiftShow: false,
-                allGifts: ["华为Mate20", '小米8', 'iPhone XR', 'macbook',
-                    'airpods', "笔记本电脑", '小米平衡车', '蓝牙耳机',
-                    '汽车'
-                ],
+                allGifts: [],
                 allGiftItem: [],
                 btns: []
             },
