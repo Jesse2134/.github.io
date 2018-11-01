@@ -91,11 +91,13 @@
                         mes: '确认删除&nbsp;' + item.name + "?",
                         opts: () => {
                             this.allGiftItem.splice(index, 1);
+                            localStorage.setItem('__gift__', JSON.stringify(this.allGiftItem));
                             this.$dialog.toast({
                                 mes: '保存成功',
                                 timeout: 1500,
                                 icon: 'success',
                             });
+                            this.getLocalStorage();
                         }
                     });
                 },

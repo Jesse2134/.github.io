@@ -17,8 +17,21 @@
             height: auto;
         }
 
+        .gift {
+            /* background-image: url('./back.jpg') */
+        }
+
         .yd-grids-item:after {
             height: 0px;
+        }
+
+        .yd-number {
+            line-height: 30px;
+            text-align: center;
+            padding: 10px;
+            background-color: #fff;
+            color: red;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -52,18 +65,19 @@
                 </div>
             </yd-grids-item>
         </yd-grids-group>
-        <yd-grids-group :rows="2">
-            <yd-grids-item>
-                <div slot="text">
-                    当前抽奖:
-                </div>
-            </yd-grids-item>
-            <yd-grids-item>
-                <div slot="text">
-                    {{selectedTimer[0]}}
-                </div>
-            </yd-grids-item>
-        </yd-grids-group>
+        <yd-flexbox v-if="numberSh > 0" v-for="i in numberSh">
+            <yd-flexbox-item class="yd-number">{{selectedTimer[3*i - 3]}}</yd-flexbox-item>
+            <yd-flexbox-item class="yd-number">{{selectedTimer[3*i - 2]}}</yd-flexbox-item>
+            <yd-flexbox-item class="yd-number">{{selectedTimer[3*i - 1]}}</yd-flexbox-item>
+        </yd-flexbox>
+        <yd-flexbox v-if="numberYu > 0">
+            <yd-flexbox-item class="yd-number" v-for="i in numberYu" :key="i">{{selectedTimer[3*numberSh + i - 1]}}</yd-flexbox-item>
+        </yd-flexbox>
+        <div style="padding: 20px">
+            <yd-button v-if="!checking" size="large" type="primary" shape="circle" @click.native="startTimer">点击开始</yd-button>
+            <yd-button v-else size="large" type="primary" shape="circle" @click.native="stopTimer">停</yd-button>
+        </div>
+
         <yd-popup v-model="setCodeShow" position="bottom" height="60%">
             <yd-cell-group class='gift-form'>
                 <yd-cell-item>
@@ -90,9 +104,13 @@
             <div style="text-align: center">开始抽奖后,不允许再修改该编号</div>
         </yd-popup>
         <yd-popup v-model="selectGiftShow" position="bottom" height="40%">
-            <yd-radio-group v-model="checkingGift">
-                <yd-radio style="padding: 30px 10px 5px 15px; width: 33%" :val="item.name" v-for="(item, index) in allGiftItem" :key="index"></yd-radio>
+            <yd-radio-group v-model="checkingGift" :callback="checkedGift">
+                <yd-radio style="padding: 30px 10px 5px 15px; width: 33%" :val="item.name" v-for="(item, index) in allGiftItem"
+                    :key="index"></yd-radio>
             </yd-radio-group>
+            <div style="padding: 20px; margin-bottom: 60px">
+                <yd-button size="large" type="primary" @click.native="goToAdd(null, $event)">添加新奖项</yd-button>
+            </div>
         </yd-popup>
         <yd-tabbar fixed>
             <yd-tabbar-item title="首页" type="a" link="index.html" active>
@@ -116,16 +134,42 @@
                 end: 100,
                 name: '',
                 number: '',
+                numberSh: '',
+                numberYu: '',
                 checkingGift: '请选择',
                 selctGiftShow: false,
                 allGiftItem: [],
                 timer: [],
                 selectedTimer: [],
-                selectedTimerPool: []
+                selectedTimerPool: [],
+                checking: false
             },
             methods: {
+                checkedGift(val) {
+                    this.allGiftItem.forEach(item => {
+                        if (item.name == val) {
+                            this.number = parseInt(item.number);
+                            this.numberSh = parseInt(this.number / 3);
+                            this.numberYu = parseInt(this.number % 3);
+                            console.info(this.number);
+                            console.info(this.numberSh, this.numberYu);
+                            for (let i = 0; i < this.number; i++) {
+                                this.$set(this.selectedTimer, i, 0);
+                            }
+                            console.info(this.selectedTimer);
+                        }
+                    })
+                },
+
                 back() {
                     window.history.go(-1);
+                },
+                goToAdd(name) {
+                    if (name) {
+                        window.location.href = 'add.html?name=' + name;
+                    } else {
+                        window.location.href = 'add.html';
+                    }
                 },
                 setCode() {
                     let codeObj = {
@@ -149,13 +193,29 @@
                         this.allGiftItem = JSON.parse(all);
                     }
                 },
+
+                startTimer() {
+                    for (let i = 0; i < this.number; i++) {
+                        this.$set(this.timer, i, setInterval(() => {
+                            this.$set(this.selectedTimer, i, parseInt(Math.random() * this.end))
+                        }, 30))
+                    }
+                    this.checking = true;
+                },
+                stopTimer(){
+                    for (let i = 0; i < this.number; i++) {
+                        // this.$set(this.timer, i, );
+                        clearInterval(this.timer[i])
+                    }
+                    this.checking = false;
+                }
             },
             mounted() {
                 this.getCode();
                 this.getLocalStorage();
-                this.timer[0] = setInterval(() => {
-                    this.$set(this.selectedTimer, 0, parseInt(Math.random() * 200));
-                }, 30)
+                // this.timer[0] = setInterval(() => {
+                //     this.$set(this.selectedTimer, 0, parseInt(Math.random() * 200));
+                // }, 30)
             },
             destroyed() {
                 clearInterval(this.timer[0]);

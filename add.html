@@ -109,8 +109,10 @@
                         if (allList.length > 0) {
                             allList = JSON.parse(allList);
                         }
+                        let isHas = false;
                         allList.forEach((item, index) => {
                             if (item.name == giftObj.name) {
+                                isHas = true;
                                 if (!this.searchName) {
                                     this.$dialog.confirm({
                                         title: '系统提示',
@@ -138,8 +140,20 @@
                                         icon: 'success',
                                     });
                                 }
+                            } else {
+                                isHas = false;
                             }
                         })
+                        if (!isHas) {
+                            allList.push(giftObj);
+                            localStorage.setItem('__gift__', JSON.stringify(
+                                allList));
+                            this.$dialog.toast({
+                                mes: '保存成功',
+                                timeout: 1500,
+                                icon: 'success',
+                            });
+                        }
                     }
                 },
                 getLocalStorage() {
