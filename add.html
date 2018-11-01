@@ -24,7 +24,7 @@
         <yd-navbar title="设置奖项">
             <yd-navbar-back-icon slot="left" @click.native="back">返回</yd-navbar-back-icon>
         </yd-navbar>
-        
+
         <yd-cell-group class='gift-form'>
             <yd-cell-item>
                 <span slot="left" style="color: red;font-weight: 500">设置奖项名称:</span>
@@ -42,8 +42,9 @@
         <div>
             <span style="padding:5px" v-for="(item, index) in checklist" :key="index">[{{item}}]</span>
         </div>
-        <yd-button size="large" type="primary" @click.native="saveData">保存设置</yd-button>
-        <yd-button size="large" type="primary" @click.native="getLocalStorage">获取测试</yd-button>
+        <div style="padding: 20px">
+            <yd-button size="large" type="primary" @click.native="saveData">保存设置</yd-button>
+        </div>
         <yd-popup v-model="selctGiftShow" position="bottom" height="60%">
             <yd-checklist v-model="checklist">
                 <yd-checklist-item :val="item" v-for="(item, index) in allGifts" :key="index">
@@ -58,7 +59,7 @@
             <yd-tabbar-item title="奖项" type="a" link="list.html">
                 <yd-icon name="star" slot="icon"></yd-icon>
             </yd-tabbar-item>
-            <yd-tabbar-item title="设置" type="a" link="add.html" active>
+            <yd-tabbar-item title="设置" type="a" link="setting.html">
                 <yd-icon name="setting" slot="icon"></yd-icon>
             </yd-tabbar-item>
         </yd-tabbar>
@@ -75,6 +76,7 @@
                     'airpods', "笔记本电脑", '小米平衡车', '蓝牙耳机',
                     '汽车'
                 ],
+                searchName: ''
             },
             methods: {
                 back() {
@@ -109,24 +111,60 @@
                         }
                         allList.forEach((item, index) => {
                             if (item.name == giftObj.name) {
-                                allList.splice(index, 1);
+                                if (!this.searchName) {
+                                    this.$dialog.confirm({
+                                        title: '系统提示',
+                                        mes: item.name + '&nbsp;已存在,是否替换?',
+                                        opts: () => {
+                                            allList.splice(index, 1);
+                                            allList.push(giftObj);
+                                            localStorage.setItem('__gift__', JSON.stringify(
+                                                allList));
+                                            this.$dialog.toast({
+                                                mes: '保存成功',
+                                                timeout: 1500,
+                                                icon: 'success',
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    allList.splice(index, 1);
+                                    allList.push(giftObj);
+                                    localStorage.setItem('__gift__', JSON.stringify(
+                                        allList));
+                                    this.$dialog.toast({
+                                        mes: '保存成功',
+                                        timeout: 1500,
+                                        icon: 'success',
+                                    });
+                                }
                             }
                         })
-                        allList.push(giftObj);
-                        localStorage.setItem('__gift__', JSON.stringify(allList));
-                        this.$dialog.toast({
-                            mes: '保存成功',
-                            timeout: 1500,
-                            icon: 'success',
-                        });
                     }
                 },
                 getLocalStorage() {
                     let all = localStorage.getItem('__gift__') || [];
-                    alert(all);
+                    let search = location.search;
+                    let name = search ? decodeURIComponent(search.split('=')[1]) : '';
+                    this.searchName = name;
+                    if (all && all.length > 0) {
+                        all = JSON.parse(all);
+                        all.forEach((item, index) => {
+                            if (item.name == name) {
+                                this.name = item.name;
+                                this.number = item.number;
+                                this.checklist = item.selectGift;
+                            }
+                        })
+                    }
                 }
-            }
-
+            },
+            mounted() {
+                this.getLocalStorage();
+            },
+            destroyed() {
+                this.searchName = '';
+            },
         })
     </script>
 </body>

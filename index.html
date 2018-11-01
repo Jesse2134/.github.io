@@ -16,6 +16,10 @@
         .gift-form .yd-input {
             height: auto;
         }
+
+        .yd-grids-item:after {
+            height: 0px;
+        }
     </style>
 </head>
 
@@ -27,12 +31,36 @@
         <yd-grids-group :rows="2">
             <yd-grids-item>
                 <div slot="text">
-                    抽奖编号范围
+                    编号范围
                 </div>
             </yd-grids-item>
             <yd-grids-item>
                 <div slot="text" @click="setCodeShow = true">
                     <span>{{start}} ~ {{end}}</span>
+                </div>
+            </yd-grids-item>
+        </yd-grids-group>
+        <yd-grids-group :rows="2">
+            <yd-grids-item>
+                <div slot="text">
+                    当前抽奖:
+                </div>
+            </yd-grids-item>
+            <yd-grids-item>
+                <div slot="text" @click="selectGiftShow = true">
+                    {{checkingGift}}
+                </div>
+            </yd-grids-item>
+        </yd-grids-group>
+        <yd-grids-group :rows="2">
+            <yd-grids-item>
+                <div slot="text">
+                    当前抽奖:
+                </div>
+            </yd-grids-item>
+            <yd-grids-item>
+                <div slot="text">
+                    {{selectedTimer[0]}}
                 </div>
             </yd-grids-item>
         </yd-grids-group>
@@ -43,14 +71,28 @@
                 </yd-cell-item>
                 <yd-cell-item>
                     <div slot="left">
-                        开始:<yd-spinner mix="0" v-model="start"></yd-spinner>
+                        <span style="text-align: center">开始</span>
                     </div>
                     <div slot="right">
-                        结束:<yd-spinner v-model="end"></yd-spinner>
+                        <span style="text-align: center">结束</span>
+                    </div>
+                </yd-cell-item>
+                <yd-cell-item>
+                    <div slot="left">
+                        <yd-spinner mix="0" v-model="start"></yd-spinner>
+                    </div>
+                    <div slot="right">
+                        <yd-spinner v-model="end"></yd-spinner>
                     </div>
                 </yd-cell-item>
             </yd-cell-group>
-            <yd-button type="primary" @click.native="setCode">设置奖品</yd-button>
+            <yd-button type="primary" size="large" @click.native="setCode">保存编号</yd-button>
+            <div style="text-align: center">开始抽奖后,不允许再修改该编号</div>
+        </yd-popup>
+        <yd-popup v-model="selectGiftShow" position="bottom" height="40%">
+            <yd-radio-group v-model="checkingGift">
+                <yd-radio style="padding: 30px 10px 5px 15px; width: 33%" :val="item.name" v-for="(item, index) in allGiftItem" :key="index"></yd-radio>
+            </yd-radio-group>
         </yd-popup>
         <yd-tabbar fixed>
             <yd-tabbar-item title="首页" type="a" link="index.html" active>
@@ -59,7 +101,7 @@
             <yd-tabbar-item title="奖项" type="a" link="list.html">
                 <yd-icon name="star" slot="icon"></yd-icon>
             </yd-tabbar-item>
-            <yd-tabbar-item title="设置" type="a" link="add.html">
+            <yd-tabbar-item title="设置" type="a" link="setting.html">
                 <yd-icon name="setting" slot="icon"></yd-icon>
             </yd-tabbar-item>
         </yd-tabbar>
@@ -69,75 +111,55 @@
             el: '#gift',
             data: {
                 setCodeShow: false,
-                start: '100',
-                end: 200,
-
+                selectGiftShow: false,
+                start: 1,
+                end: 100,
                 name: '',
                 number: '',
-                checklist: [],
+                checkingGift: '请选择',
                 selctGiftShow: false,
-                allGifts: ["华为Mate20", '小米8', 'iPhone XR', 'macbook',
-                    'airpods', "笔记本电脑", '小米平衡车', '蓝牙耳机',
-                    '汽车'
-                ],
+                allGiftItem: [],
+                timer: [],
+                selectedTimer: [],
+                selectedTimerPool: []
             },
             methods: {
                 back() {
                     window.history.go(-1);
                 },
-                setCode(){
+                setCode() {
                     let codeObj = {
                         start: this.start,
                         end: this.end
                     }
-                    localStorage.setItem('__code__', codeObj);
+                    localStorage.setItem('__code__', JSON.stringify(codeObj));
                 },
 
-                saveData() {
-                    let giftObj = {
-                        name: this.name,
-                        number: this.number,
-                        selectGift: this.checklist
-                    };
-                    if (!giftObj.name) {
-                        this.$dialog.notify({
-                            mes: '请填写奖项名称',
-                            timeout: 1500
-                        });
-                    } else if (!giftObj.number) {
-                        this.$dialog.notify({
-                            mes: '请填写奖项名额',
-                            timeout: 1500
-                        });
-                    } else if (giftObj.selectGift.length < 1) {
-                        this.$dialog.notify({
-                            mes: '请选择奖品',
-                            timeout: 1500
-                        });
-                    } else {
-                        let allList = localStorage.getItem('__gift__') || [];
-                        if (allList.length > 0) {
-                            allList = JSON.parse(allList);
-                        }
-                        allList.forEach((item, index) => {
-                            if (item.name == giftObj.name) {
-                                allList.splice(index, 1);
-                            }
-                        })
-                        allList.push(giftObj);
-                        localStorage.setItem('__gift__', JSON.stringify(allList));
-                        this.$dialog.toast({
-                            mes: '保存成功',
-                            timeout: 1500,
-                            icon: 'success',
-                        });
+                getCode() {
+                    let codeObj = localStorage.getItem('__code__') || {};
+                    if (Object.keys(codeObj).length > 0) {
+                        codeObj = JSON.parse(codeObj);
+                        this.start = codeObj.start;
+                        this.end = codeObj.end;
                     }
                 },
                 getLocalStorage() {
                     let all = localStorage.getItem('__gift__') || [];
-                    alert(all);
-                }
-            }
+                    if (all.length > 0) {
+                        this.allGiftItem = JSON.parse(all);
+                    }
+                },
+            },
+            mounted() {
+                this.getCode();
+                this.getLocalStorage();
+                this.timer[0] = setInterval(() => {
+                    this.$set(this.selectedTimer, 0, parseInt(Math.random() * 200));
+                }, 30)
+            },
+            destroyed() {
+                clearInterval(this.timer[0]);
+            },
 
         })
     </script>

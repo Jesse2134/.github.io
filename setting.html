@@ -21,43 +21,20 @@
 
 <body>
     <div id="gift" class="gift">
-        <yd-navbar title="奖项列表">
+        <yd-navbar title="设置奖项">
             <yd-navbar-back-icon slot="left" @click.native="back">返回</yd-navbar-back-icon>
         </yd-navbar>
-        <yd-preview :buttons="btns" v-for="(item, index) in allGiftItem" :key="index">
-            <yd-preview-header>
-                <div slot="left">奖项名称</div>
-                <div slot="right">{{item.name}}</div>
-            </yd-preview-header>
-            <yd-preview-item>
-                <div slot="left">奖项名额</div>
-                <div slot="right">{{item.number}}名</div>
-            </yd-preview-item>
-            <yd-preview-item>
-                <div slot="left">奖项奖品</div>
-                <div slot="right">
-                    <span v-for="(gift, key) in item.selectGift" :key="key">[{{gift}}]</span>
-                </div>
-            </yd-preview-item>
-            <yd-preview-item>
-                <div slot="left">操作</div>
-                <div slot="right">
-                    <yd-button size="small" type="primary" @click.native="goToAdd(item.name, $event)">编辑</yd-button>
-                    <yd-button size="small" type="danger" @click.native="sureDelete(item, index, $event)">删除</yd-button>
-                </div>
-            </yd-preview-item>
-        </yd-preview>
-        <div style="padding: 20px; margin-bottom: 60px">
-            <yd-button size="large" type="primary" @click.native="goToAdd(null, $event)">添加奖项</yd-button>
+        <div style="padding: 20px">
+            <yd-button size="large" type="primary" @click.native="saveData">设置奖品池</yd-button>
         </div>
         <yd-tabbar fixed>
             <yd-tabbar-item title="首页" type="a" link="index.html">
                 <yd-icon name="home" slot="icon"></yd-icon>
             </yd-tabbar-item>
-            <yd-tabbar-item title="奖项" type="a" link="list.html" active>
+            <yd-tabbar-item title="奖项" type="a" link="list.html">
                 <yd-icon name="star" slot="icon"></yd-icon>
             </yd-tabbar-item>
-            <yd-tabbar-item title="设置" type="a" link="setting.html">
+            <yd-tabbar-item title="设置" type="a" link="setting.html" active>
                 <yd-icon name="setting" slot="icon"></yd-icon>
             </yd-tabbar-item>
         </yd-tabbar>
@@ -74,34 +51,12 @@
                     'airpods', "笔记本电脑", '小米平衡车', '蓝牙耳机',
                     '汽车'
                 ],
-                allGiftItem: [],
-                btns: []
             },
             methods: {
-                goToAdd(name) {
-                    if (name) {
-                        window.location.href = 'add.html?name=' + name;
-                    } else {
-                        window.location.href = 'add.html';
-                    }
-                },
-                sureDelete(item, index) {
-                    this.$dialog.confirm({
-                        title: '系统提示',
-                        mes: '确认删除&nbsp;' + item.name + "?",
-                        opts: () => {
-                            this.allGiftItem.splice(index, 1);
-                            this.$dialog.toast({
-                                mes: '保存成功',
-                                timeout: 1500,
-                                icon: 'success',
-                            });
-                        }
-                    });
-                },
                 back() {
                     window.history.go(-1);
                 },
+
                 saveData() {
                     let giftObj = {
                         name: this.name,
@@ -144,14 +99,9 @@
                 },
                 getLocalStorage() {
                     let all = localStorage.getItem('__gift__') || [];
-                    if (all.length > 0) {
-                        this.allGiftItem = JSON.parse(all);
-                    }
-                },
-            },
-            mounted() {
-                this.getLocalStorage();
-            },
+                    alert(all);
+                }
+            }
 
         })
     </script>
