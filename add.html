@@ -27,15 +27,15 @@
 
         <yd-cell-group class='gift-form'>
             <yd-cell-item>
-                <span slot="left" style="color: red;font-weight: 500">奖项名称:</span>
+                <span slot="left" style="color: red;font-weight: 500">名称:</span>
                 <yd-input slot="right" required v-model="name" placeholder="请输入抽奖名称"></yd-input>
             </yd-cell-item>
             <yd-cell-item>
-                <span slot="left" style="color: red;font-weight: 500">奖项名额:</span>
+                <span slot="left" style="color: red;font-weight: 500">名额:</span>
                 <yd-input slot="right" required v-model="number" max="20" placeholder="请输入奖项名额(数字)"></yd-input>
             </yd-cell-item>
             <yd-cell-item>
-                <span slot="left" style="color: red;font-weight: 500">包含奖品:</span>
+                <span slot="left" style="color: red;font-weight: 500">奖品:</span>
                 <yd-button slot="right" type="primary" @click.native="selctGiftShow = true">选择奖品</yd-button>
             </yd-cell-item>
         </yd-cell-group>

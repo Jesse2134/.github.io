@@ -26,15 +26,15 @@
         </yd-navbar>
         <yd-preview :buttons="btns" v-for="(item, index) in allGiftItem" :key="index">
             <yd-preview-header>
-                <div slot="left">奖项名称</div>
+                <div slot="left">名称</div>
                 <div slot="right">{{item.name}}</div>
             </yd-preview-header>
             <yd-preview-item>
-                <div slot="left">奖项名额</div>
+                <div slot="left">名额</div>
                 <div slot="right">{{item.number}}名</div>
             </yd-preview-item>
             <yd-preview-item>
-                <div slot="left">奖项奖品</div>
+                <div slot="left">奖品</div>
                 <div slot="right">
                     <span v-for="(gift, key) in item.selectGift" :key="key">[{{gift}}]</span>
                 </div>
