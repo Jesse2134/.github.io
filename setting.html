@@ -24,7 +24,7 @@
         .yd-number {
             line-height: 30px;
             text-align: center;
-            padding: 10px;
+            padding: 5px;
             background-color: #fff;
             color: red;
             font-size: 18px;
@@ -38,11 +38,13 @@
             <yd-navbar-back-icon slot="left" @click.native="back">返回</yd-navbar-back-icon>
         </yd-navbar>
         <div style="padding: 20px">
-            <yd-button size="large" type="primary" shape="circle" @click.native="addGiftShow = true">设置奖品池</yd-button>
+            <yd-button size="large" type="primary" shape="circle" @click.native="addGiftShow = true">添加新奖品</yd-button>
         </div>
-        <yd-flexbox v-for="i in allGifts">
-            <yd-flexbox-item class="yd-number">{{i}}</yd-flexbox-item>
-        </yd-flexbox>
+        <div style="margin-bottom: 50px;">
+            <yd-flexbox v-for="i in allGifts">
+                <yd-flexbox-item class="yd-number">{{i}}</yd-flexbox-item>
+            </yd-flexbox>
+        </div>
         <yd-popup v-model="addGiftShow" position="bottom" height="60%">
             <yd-cell-group class='gift-form'>
                 <yd-cell-item>
@@ -104,6 +106,7 @@
                                 icon: 'success',
                             });
                             this.getLocalStorage();
+                            this.name = '';
                         }
                     }
                 },

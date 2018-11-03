@@ -5,7 +5,7 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <title>ACCA中新教育 幸运大抽奖</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
- 
+
     <!-- 引入Vue2.x -->
     <script src="https://cdn.bootcss.com/vue/2.5.17/vue.min.js"></script>
     <!-- 引入组件库 -->
@@ -77,7 +77,16 @@
             <yd-button v-if="!checking" :disabled="!number" size="large" type="primary" shape="circle" @click.native="startTimer">点击开始</yd-button>
             <yd-button v-else size="large" type="primary" shape="circle" @click.native="stopTimer">停</yd-button>
         </div>
-
+        <yd-flexbox class="yd-number" v-for="(item, index) in historyList" v-if="historyList.length>0">
+            <yd-flexbox-item class="yd-number">{{item.name}}{{item.number}}名</yd-flexbox-item>
+            <yd-flexbox-item class="yd-number">
+                <span v-for="(ii, ind) in item.checkedNums" v-if="ind != 0">|[{{ii}}]</span>
+                <span v-else>[{{ii}}]</span>
+            </yd-flexbox-item>
+        </yd-flexbox>
+        <div v-if="historyList.length > 0" style="padding: 20px 50px 20px 50px; margin-bottom: 50px">
+            <yd-button :disabled="checking" size="large" type="primary" shape="circle" @click.native="reStart">重置</yd-button>
+        </div>
         <yd-popup v-model="setCodeShow" position="bottom" height="60%">
             <yd-cell-group class='gift-form'>
                 <yd-cell-item>
@@ -93,14 +102,14 @@
                 </yd-cell-item>
                 <yd-cell-item>
                     <div slot="left">
-                        <yd-spinner mix="0" v-model="start"></yd-spinner>
+                        <yd-spinner mix="0" v-model="start" :readonly="historyList.length > 0"></yd-spinner>
                     </div>
                     <div slot="right">
-                        <yd-spinner v-model="end"></yd-spinner>
+                        <yd-spinner v-model="end" :readonly="historyList.length > 0"></yd-spinner>
                     </div>
                 </yd-cell-item>
             </yd-cell-group>
-            <yd-button type="primary" shape="circle" size="large" @click.native="setCode">保存编号</yd-button>
+            <yd-button type="primary" shape="circle" size="large" :disabled="historyList.length > 0" @click.native="setCode">保存编号</yd-button>
             <div style="text-align: center">开始抽奖后,不允许再修改该编号</div>
         </yd-popup>
         <yd-popup v-model="selectGiftShow" position="bottom" height="40%">
@@ -142,7 +151,11 @@
                 timer: [],
                 selectedTimer: [],
                 selectedTimerPool: [],
-                checking: false
+                checking: false,
+                newCheck: true,
+                checkedNums: [],
+                allCheckedNums: [],
+                historyList: [] // 历史
             },
             methods: {
                 checkedGift(val) {
@@ -151,16 +164,22 @@
                             this.number = parseInt(item.number);
                             this.numberSh = parseInt(this.number / 3);
                             this.numberYu = parseInt(this.number % 3);
-                            console.info(this.number);
-                            console.info(this.numberSh, this.numberYu);
                             for (let i = 0; i < this.number; i++) {
                                 this.$set(this.selectedTimer, i, 0);
                             }
-                            console.info(this.selectedTimer);
                         }
                     })
                 },
-
+                reStart() {
+                    this.newCheck = true;
+                    this.checkedNums = new Array;
+                    this.historyList = [];
+                    this.allCheckedNums = [];
+                    this.checking = false;
+                    for (let i = 0; i < this.number; i++) {
+                        this.$set(this.selectedTimer, i, 0);
+                    }
+                },
                 back() {
                     window.history.go(-1);
                 },
@@ -194,33 +213,101 @@
                     }
                 },
 
+                randomNum(lower, upper) {
+                    return Math.floor(Math.random() * (upper - lower + 1)) + lower;
+                },
+
+                truelyRandom(lower, upper) {
+                    console.info('start', lower);
+                    console.info('end', upper);
+                    this.checkedNums = new Array; //抽中的数组
+                    if (this.newCheck) {
+                        this.newCheck = false;
+                        this.selectedTimerPool = {}; // 编号池子
+                        for (let i = lower; i <= upper; i++) {
+                            this.selectedTimerPool[i] = i;
+                        }
+                    }
+                    console.info('selectedTimerPool', this.selectedTimerPool);
+                    for (let num, i = 0; i < this.number; i++) {
+                        do {
+                            num = this.randomNum(lower, upper);
+                        } while (this.selectedTimerPool[num] == null);
+                        this.checkedNums.push(this.selectedTimerPool[num]);
+                        this.selectedTimerPool[num] = null;
+                    }
+                    this.checkedNums.forEach((item, index) => {
+                        this.$set(this.selectedTimer, index, item);
+                    })
+                    this.allCheckedNums = this.checkedNums.concat(this.allCheckedNums);
+                    let checkObj = {
+                        name: this.checkingGift,
+                        number: this.number,
+                        checkedNums: this.checkedNums
+                    };
+                    this.historyList.push(checkObj);
+                    console.info('selectedTimerPool', this.selectedTimerPool);
+                    console.info('checkedNums', this.checkedNums);
+                    console.info('allCheckedNums', this.allCheckedNums);
+                },
+
                 startTimer() {
+                    if (this.end - this.start - this.number < 0) {
+                        this.$dialog.notify({
+                            mes: '编号范围不能小于抽奖名额',
+                            timeout: 1500
+                        });
+                        return;
+                    }
+                    if (!this.newCheck) {
+                        let allValues = Object.values(this.selectedTimerPool);
+                        let allHas = allValues.filter(tt => {
+                            return tt
+                        });
+                        if (allHas.length < this.number) {
+                            this.$dialog.notify({
+                                mes: '剩余编号数量小于抽奖名额',
+                                timeout: 1500
+                            });
+                            return;
+                        }
+                    }
+                    this.selectedTimer = [];
+                    for (let i = 0; i < this.number; i++) {
+                        this.$set(this.selectedTimer, i, 0)
+                    }
                     for (let i = 0; i < this.number; i++) {
                         this.$set(this.timer, i, setInterval(() => {
-                            this.$set(this.selectedTimer, i, parseInt(Math.random() * this.end))
+                            let num = this.randomNum(this.start, this.end);
+                            this.$set(this.selectedTimer, i, num)
                         }, 30))
                     }
                     this.checking = true;
                 },
-                stopTimer(){
+
+                // 检查是否重复
+                checkSecond(arr, item) {
+                    if (arr.includes(item)) {
+                        item = this.randomNum(this.start, this.end);
+                        this.checkSecond(arr, item);
+                    } else {
+                        return item;
+                    }
+                },
+
+                stopTimer() {
                     for (let i = 0; i < this.number; i++) {
-                        // this.$set(this.timer, i, );
                         clearInterval(this.timer[i])
                     }
+                    this.truelyRandom(this.start, this.end);
+
                     this.checking = false;
                 }
             },
             mounted() {
                 this.getCode();
                 this.getLocalStorage();
-                // this.timer[0] = setInterval(() => {
-                //     this.$set(this.selectedTimer, 0, parseInt(Math.random() * 200));
-                // }, 30)
-            },
-            destroyed() {
-                clearInterval(this.timer[0]);
-            },
-
+            }
         })
     </script>
 </body>
