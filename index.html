@@ -81,7 +81,8 @@
             </yd-flexbox-item>
         </yd-flexbox>
         <div v-if="historyList.length > 0" style="padding: 5px 50px 5px 50px; margin-bottom: 60px">
-            <yd-button :disabled="checking" size="large" type="primary" shape="circle" @click.native="reStart">重置</yd-button>
+            <yd-button :disabled="checking" size="large" 
+            style="margin-bottom: 60px" type="primary" shape="circle" @click.native="reStart">重置</yd-button>
         </div>
         <yd-popup v-model="setCodeShow" position="bottom" height="60%">
             <yd-cell-group class='gift-form'>
