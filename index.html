@@ -13,6 +13,13 @@
     <!-- 引入组件库 -->
     <script src="https://unpkg.com/vue-ydui/dist/ydui.px.js"></script>
     <style type="text/css">
+        .gift-web {
+            background-image: url('./back.jpg');
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            -moz-background-size: 100% 100%;
+        }
+
         .gift-form .yd-input {
             height: auto;
         }
@@ -25,14 +32,17 @@
             line-height: 30px;
             text-align: center;
             padding: 10px;
-            background-color: #fff;
             color: red;
             font-size: 18px;
+        }
+
+        .yd-grids-2 {
+            background-color: inherit;
         }
     </style>
 </head>
 
-<body>
+<body class="gift-web">
     <div id="gift" class="gift">
         <yd-navbar title="抽奖">
             <yd-navbar-back-icon slot="left" @click.native="back">返回</yd-navbar-back-icon>
@@ -81,8 +91,8 @@
             </yd-flexbox-item>
         </yd-flexbox>
         <div v-if="historyList.length > 0" style="padding: 5px 50px 5px 50px; margin-bottom: 60px">
-            <yd-button :disabled="checking" size="large" 
-            style="margin-bottom: 60px" type="primary" shape="circle" @click.native="reStart">重置</yd-button>
+            <yd-button :disabled="checking" size="large" style="margin-bottom: 60px" type="primary" shape="circle"
+                @click.native="reStart">重置</yd-button>
         </div>
         <yd-popup v-model="setCodeShow" position="bottom" height="60%">
             <yd-cell-group class='gift-form'>
